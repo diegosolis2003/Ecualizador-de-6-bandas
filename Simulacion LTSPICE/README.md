@@ -20,7 +20,7 @@ Para visualizar las curvas de respuesta en frecuencia (Diagramas de Bode):
 
 ## 📈 Nodos de Medición (Probes) Destacados
 
-Puedes pinchar en las siguientes etiquetas del esquemático para observar las señales de interés en el visor de formas de onda de LTspice:
+Se púede interactuar en las siguientes etiquetas del esquemático para observar las señales de interés en el visor de formas de onda de LTspice:
 
 * `VoutB1` a `VoutB6`: Respuesta individual del filtro pasa-banda de la banda correspondiente (antes del sumador).
 * `VoutSum-12dB`: Salida total del sistema con atenuación máxima (Rp = 50 kΩ).
