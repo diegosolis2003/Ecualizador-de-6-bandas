@@ -1,73 +1,252 @@
-# Diseño de Ecualizador Analógico de 6 Bandas para Piano Eléctrico
+# Ecualizador Analógico de 6 Bandas para Piano Eléctrico
 
-<p align="center">
-  <img src="PNG/Escudo-UNIS.png" alt="Escudo de la Universidad" width="200">
-</p>
 <p align="center">
   <em>Universidad del Istmo de Guatemala</em><br>
   <em>Facultad de Ingeniería</em><br>
-  <em>Integrated Microelectronic Devices</em>
+  <em>Ecualizador Analógico de 6 Bandas para Piano Eléctrico</em><br>
+  <em>Microelectronic Devices</em>
 </p>
+
+<div align="center">
+  <img src="PNG/Escudo-UNIS.png" alt="Logo UNIS" width="45%"/>
+</div>
+
 <p align="center">
-  <em>Diego Fernando Solís López</em><br>
-  <em>mayo de 2026</em>
+  <em>Uriel Pérez</em><br>
+  <em>Diego Lemus</em><br>
+  <em>Diego Solis</em><br>
+  <em>2026</em>
 </p>
 
----
+## Descripción del Proyecto
 
-## 📌 Resumen del Proyecto
+Este repositorio contiene el desarrollo de un ecualizador analógico de seis bandas diseñado para el procesamiento de audio de un piano eléctrico. El objetivo principal del proyecto fue diseñar, simular y analizar un sistema capaz de modificar distintas regiones del espectro de frecuencia del instrumento, permitiendo controlar graves, medios, presencia, ataque y brillo de forma independiente.
 
-[span_0](start_span)Diseño e implementación de un ecualizador analógico de seis bandas optimizado específicamente para el espectro de frecuencias de un piano eléctrico[span_0](end_span). [span_1](start_span)[span_2](start_span)[span_3](start_span)Este repositorio destaca por un exhaustivo análisis y modelado previo en **LTspice**, asegurando la viabilidad matemática, el control de impedancias y el comportamiento en frecuencia de los filtros activos Sallen-Key antes de su implementación en hardware[span_1](end_span)[span_2](end_span)[span_3](end_span).
+El circuito se basa en filtros activos pasa-banda construidos a partir de etapas Sallen-Key de segundo orden. Cada banda está formada por la cascada de un filtro pasa-altas y un filtro pasa-bajas, obteniendo así un comportamiento pasa-banda de cuarto orden. Posteriormente, las señales filtradas son enviadas a una etapa sumadora inversora, donde se implementa el control de ganancia de cada banda.
 
-## 🔬 Análisis y Simulación en LTspice
+El diseño fue orientado a una respuesta adecuada para piano eléctrico, cuyo rango útil se concentra aproximadamente entre 40 Hz y 6 kHz. Para mejorar la respuesta en la frecuencia central de cada banda, se utilizó un ancho de banda de dos octavas, reduciendo la atenuación en el punto central de cada filtro.
 
-El núcleo de validación de este proyecto se basó en el uso de simulación SPICE para definir y comprobar los parámetros óptimos del circuito de audio:
+## Objetivo del Proyecto
 
-* **Optimización de Ancho de Banda:** Se simuló y comparó la respuesta de los filtros utilizando 1 octava frente a 2 octavas. [span_4](start_span)[span_5](start_span)[span_6](start_span)LTspice demostró que el ancho de 2 octavas reduce significativamente la atenuación en la frecuencia central (alcanzando -0.45 dB) y evita problemas de solapamiento en las regiones de transición[span_4](end_span)[span_5](end_span)[span_6](end_span).
-* **[span_7](start_span)Simulación AC de Múltiples Etapas:** Se modelaron las 6 ramas pasabanda activas operando de manera simultánea utilizando el modelo del amplificador operacional TL081, validando las frecuencias de corte integrales de todo el sistema[span_7](end_span).
-* **Validación del Sumador Inversor:** Se utilizó análisis de barrido AC para comprobar los límites operativos de la etapa de mezcla. [span_8](start_span)[span_9](start_span)Se verificaron matemáticamente los escenarios extremos de ganancia (+12 dB y -12 dB) y el punto de ganancia unitaria (0 dB) al variar los potenciómetros[span_8](end_span)[span_9](end_span).
-* **[span_10](start_span)Análisis Individual de Filtros:** Simulación aislada de los filtros pasa-altas (HP2) y pasa-bajas (LP2) para confirmar respuestas tipo Butterworth ($Q \approx 0.707$) con banda de paso máximamente plana[span_10](end_span).
+Diseñar un ecualizador analógico de seis bandas para piano eléctrico que permita amplificar o atenuar diferentes rangos de frecuencia, utilizando filtros activos Sallen-Key, control de ganancia por banda y una etapa de salida capaz de manejar una bocina de 8 Ω.
 
-## ⚙️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
-[span_11](start_span)El flujo de la señal está dividido en cuatro etapas principales modeladas individualmente[span_11](end_span):
+El sistema se divide en cuatro etapas principales:
 
-1. **[span_12](start_span)[span_13](start_span)Buffer de Entrada:** Seguidor de voltaje para asegurar alta impedancia y evitar cargar las pastillas/salida del piano eléctrico[span_12](end_span)[span_13](end_span).
-2. **[span_14](start_span)[span_15](start_span)Etapa de Filtrado (4to Orden):** 6 ramas en paralelo, cada una compuesta por la conexión en cascada de un filtro pasa-altas y un pasa-bajas Sallen-Key[span_14](end_span)[span_15](end_span).
-3. **[span_16](start_span)[span_17](start_span)Control de Ganancia (Sumador Activo):** Amplificador operacional en configuración inversora que mezcla las señales filtradas con ajuste independiente por banda[span_16](end_span)[span_17](end_span).
-4. **[span_18](start_span)[span_19](start_span)Etapa de Potencia:** Diseño en clase AB con transistores BJT para excitar de forma segura una carga final (bocina de $8\ \Omega$, 35 W)[span_18](end_span)[span_19](end_span).
+1. **Etapa de acople:** utiliza un seguidor de voltaje para proporcionar alta impedancia de entrada y evitar la pérdida de señal del instrumento.
+2. **Etapa de filtrado:** formada por seis ramas pasa-banda activas, cada una construida con filtros Sallen-Key pasa-altas y pasa-bajas.
+3. **Etapa de control de ganancia:** permite ajustar la amplificación o atenuación de cada banda mediante potenciómetros.
+4. **Etapa de potencia:** utiliza transistores BJT en configuración clase AB para entregar la señal procesada hacia una bocina de 8 Ω.
 
-## 📊 Especificaciones de Bandas de Frecuencia
+## Diagrama General
 
-[span_20](start_span)[span_21](start_span)Frecuencias centrales calculadas mediante media geométrica, implementando un ancho de paso de dos octavas[span_20](end_span)[span_21](end_span):
+Entrada del Piano Eléctrico  
+&nbsp;&nbsp;&nbsp;&nbsp;│  
+&nbsp;&nbsp;&nbsp;&nbsp;▼  
+Buffer de Alta Impedancia  
+&nbsp;&nbsp;&nbsp;&nbsp;│  
+&nbsp;&nbsp;&nbsp;&nbsp;▼  
+Seis Filtros Pasa-Banda en Paralelo  
+&nbsp;&nbsp;&nbsp;&nbsp;│  
+&nbsp;&nbsp;&nbsp;&nbsp;▼  
+Control de Ganancia por Banda  
+&nbsp;&nbsp;&nbsp;&nbsp;│  
+&nbsp;&nbsp;&nbsp;&nbsp;▼  
+Sumador Activo Inversor  
+&nbsp;&nbsp;&nbsp;&nbsp;│  
+&nbsp;&nbsp;&nbsp;&nbsp;▼  
+Etapa de Potencia Clase AB  
+&nbsp;&nbsp;&nbsp;&nbsp;│  
+&nbsp;&nbsp;&nbsp;&nbsp;▼  
+Bocina de 8 Ω
 
-| Banda | Frecuencia Central | Rango de Operación | Enfoque Acústico |
-| :---: | :---: | :---: | :--- |
-| **1** | 57 Hz | 28.5 Hz - 114 Hz | [span_22](start_span)[span_23](start_span)Controla la profundidad y peso de graves[span_22](end_span)[span_23](end_span). |
-| **2** | 127 Hz | 63.5 Hz - 254 Hz | [span_24](start_span)[span_25](start_span)Cuerpo principal del instrumento; ajusta calidez[span_24](end_span)[span_25](end_span). |
-| **3** | 316 Hz | 158 Hz - 632 Hz | [span_26](start_span)[span_27](start_span)Mejora la claridad general (evita sonido "encajonado")[span_26](end_span)[span_27](end_span). |
-| **4** | 886 Hz | 443 Hz - 1772 Hz | [span_28](start_span)[span_29](start_span)Determina la definición y presencia en la mezcla[span_28](end_span)[span_29](end_span). |
-| **5** | 2121 Hz | 1060.5 Hz - 4242 Hz | [span_30](start_span)[span_31](start_span)Define la articulación y el detalle del ataque del martillo[span_30](end_span)[span_31](end_span). |
-| **6** | 4900 Hz | 2450 Hz - 9800 Hz | [span_32](start_span)[span_33](start_span)Controla el brillo, aire y armónicos superiores[span_32](end_span)[span_33](end_span). |
+## Bandas de Frecuencia
 
-## 🎛️ Parámetros de Control de Ganancia
+Las bandas fueron seleccionadas tomando en cuenta el comportamiento musical del piano eléctrico y las zonas más importantes de su espectro sonoro.
 
-[span_34](start_span)La simulación definió valores estrictos en la etapa sumadora para evitar saturación del operacional ($|A_{v}| \rightarrow \infty$) mediante resistencias de protección[span_34](end_span):
+| Banda | Rango Inicial | Frecuencia Central | Función Musical |
+|---:|---:|---:|---|
+| 1 | 40 - 80 Hz | 57 Hz | Controla la profundidad y peso de las notas graves |
+| 2 | 80 - 200 Hz | 127 Hz | Ajusta el cuerpo y la calidez del instrumento |
+| 3 | 200 - 500 Hz | 316 Hz | Ayuda a corregir sonidos opacos o encerrados |
+| 4 | 500 - 1500 Hz | 886 Hz | Aporta definición y presencia en la mezcla |
+| 5 | 1500 - 3000 Hz | 2121 Hz | Controla el ataque y detalle del sonido |
+| 6 | 3000 - 8000 Hz | 4900 Hz | Ajusta el brillo y los armónicos superiores |
 
-* **[span_35](start_span)Rango Operativo por Banda:** $\pm 12\text{ dB}$[span_35](end_span).
-* **[span_36](start_span)Resistencia de Realimentación ($R_f$):** $13.3\text{ k}\Omega$[span_36](end_span).
-* **[span_37](start_span)Resistencia Serie Mínima ($R_s$):** $3.3\text{ k}\Omega$[span_37](end_span).
-* **[span_38](start_span)[span_39](start_span)Potenciómetro por Banda ($R_p$):** $50\text{ k}\Omega$ lineal[span_38](end_span)[span_39](end_span).
-* *[span_40](start_span)Nota Técnica:* El punto neutro ($0\text{ dB}$) ocurre a los $10\text{ k}\Omega$ del recorrido mecánico, demostrando un ajuste no lineal deseable[span_40](end_span).
+## Frecuencias de Corte Utilizadas
 
-## 📂 Archivos del Repositorio
+Para mejorar el desempeño de cada filtro, se utilizó un ancho de banda de dos octavas alrededor de la frecuencia central. Las frecuencias finales utilizadas para el diseño fueron:
 
-| Directorio / Archivo | Descripción |
-| :--- | :--- |
-| `/Simulaciones_LTspice/` | Archivos `.asc` y gráficos de respuesta en frecuencia AC de cada banda y de la etapa de suma. |
-| `Informe_Ecualizador.pdf` | Documentación teórica, memoria de cálculo de componentes y justificación acústica. |
+| Banda | Corte Inferior | Corte Superior | Frecuencia Central |
+|---:|---:|---:|---:|
+| 1 | 28.5 Hz | 114 Hz | 57 Hz |
+| 2 | 63.5 Hz | 254 Hz | 127 Hz |
+| 3 | 158 Hz | 632 Hz | 316 Hz |
+| 4 | 443 Hz | 1772 Hz | 886 Hz |
+| 5 | 1060.5 Hz | 4242 Hz | 2121 Hz |
+| 6 | 2450 Hz | 9800 Hz | 4900 Hz |
 
-## 🛠️ Herramientas Utilizadas
+## Construcción de los Filtros
 
-* **[span_41](start_span)[span_42](start_span)LTspice:** Plataforma base para el análisis AC y modelado de respuesta en frecuencia[span_41](end_span)[span_42](end_span).
-* **[span_43](start_span)[span_44](start_span)Okawa-denshi:** Herramienta de cálculo avanzado para los componentes pasivos de las etapas Sallen-Key[span_43](end_span)[span_44](end_span).
+Cada banda del ecualizador está compuesta por:
+
+- Un filtro pasa-altas de segundo orden
+- Un filtro pasa-bajas de segundo orden
+- Una etapa de control de ganancia
+- Una conexión hacia el sumador activo
+
+Al conectar en cascada el filtro pasa-altas y el filtro pasa-bajas, se obtiene una respuesta pasa-banda de cuarto orden. Esta configuración permite una mejor separación entre bandas y una atenuación aproximada de **-40 dB/dec** fuera del rango de paso.
+
+Los filtros fueron diseñados con respuesta tipo Butterworth, usando un factor de calidad aproximado de:
+
+**Q = 0.707**
+
+Este valor permite obtener una respuesta plana en la banda de paso y una atenuación controlada en las frecuencias de corte.
+
+## Topología Sallen-Key
+
+El proyecto utiliza la topología Sallen-Key para implementar los filtros activos de segundo orden. Esta topología fue seleccionada porque permite construir filtros pasa-altas y pasa-bajas con amplificadores operacionales, resistencias y capacitores, manteniendo una estructura sencilla y adecuada para aplicaciones de audio.
+
+Cada filtro fue configurado con ganancia unitaria, dejando el control de nivel de cada banda para una etapa posterior.
+
+## Valores Calculados de Componentes
+
+### Banda 1 - 57 Hz
+
+| Componente | HP2 | LP2 |
+|---|---:|---:|
+| R1 | 3.9 kΩ | 27 kΩ |
+| R2 | 8.2 kΩ | 16 kΩ |
+| C1 | 1 µF | 0.1 µF |
+| C2 | 1 µF | 0.047 µF |
+
+### Banda 2 - 127 Hz
+
+| Componente | HP2 | LP2 |
+|---|---:|---:|
+| R1 | 18 kΩ | 12 kΩ |
+| R2 | 36 kΩ | 6.8 kΩ |
+| C1 | 0.1 µF | 0.1 µF |
+| C2 | 0.1 µF | 0.047 µF |
+
+### Banda 3 - 316 Hz
+
+| Componente | HP2 | LP2 |
+|---|---:|---:|
+| R1 | 6.8 kΩ | 47 kΩ |
+| R2 | 15 kΩ | 30 kΩ |
+| C1 | 0.1 µF | 0.01 µF |
+| C2 | 0.1 µF | 0.0047 µF |
+
+### Banda 4 - 886 Hz
+
+| Componente | HP2 | LP2 |
+|---|---:|---:|
+| R1 | 24 kΩ | 16 kΩ |
+| R2 | 51 kΩ | 10 kΩ |
+| C1 | 0.01 µF | 0.01 µF |
+| C2 | 0.01 µF | 0.0047 µF |
+
+### Banda 5 - 2121 Hz
+
+| Componente | HP2 | LP2 |
+|---|---:|---:|
+| R1 | 11 kΩ | 6.8 kΩ |
+| R2 | 22 kΩ | 4.3 kΩ |
+| C1 | 0.01 µF | 0.01 µF |
+| C2 | 0.01 µF | 0.0047 µF |
+
+### Banda 6 - 4243 Hz
+
+| Componente | HP2 | LP2 |
+|---|---:|---:|
+| R1 | 4.7 kΩ | 30 kΩ |
+| R2 | 9.1 kΩ | 18 kΩ |
+| C1 | 0.01 µF | 0.001 µF |
+| C2 | 0.01 µF | 470 pF |
+
+## Control de Ganancia
+
+La etapa de control de ganancia se implementó mediante un sumador inversor con resistencia de realimentación, resistencia serie y potenciómetro. Esto permite modificar la contribución de cada banda hacia la salida final.
+
+El rango de ganancia diseñado fue aproximadamente de:
+
+**-12 dB a +12 dB**
+
+Los valores comerciales seleccionados fueron:
+
+- Resistencia de realimentación: **Rf = 13.3 kΩ**
+- Resistencia serie mínima: **Rs = 3.3 kΩ**
+- Potenciómetro por banda: **Rp = 50 kΩ**
+
+Con estos valores se obtiene:
+
+| Condición | Valor de Rp | Ganancia Aproximada |
+|---|---:|---:|
+| Realce máximo | 0 Ω | +12.12 dB |
+| Ganancia unitaria | 10 kΩ | 0 dB |
+| Atenuación máxima | 50 kΩ | -12.06 dB |
+
+## Etapa de Salida
+
+Para la salida del sistema se consideró una bocina de:
+
+**8 Ω / 35 W RMS**
+
+Esta bocina fue seleccionada porque permite trabajar con una etapa de potencia clase AB sin requerir corrientes excesivas. Además, proporciona un margen adecuado para evitar saturación o daño ante picos de señal.
+
+El voltaje máximo eficaz permitido por la bocina se calculó mediante:
+
+**Vrms = sqrt(P × R)**
+
+**Vrms = sqrt(35 W × 8 Ω)**
+
+**Vrms ≈ 16.7 V**
+
+Esto permite establecer un límite de seguridad para la señal de salida del ecualizador.
+
+## Simulación en LTspice
+
+El diseño fue simulado en LTspice utilizando modelos de amplificadores operacionales TL081. Las simulaciones incluyeron:
+
+- Análisis individual de filtros pasa-altas y pasa-bajas
+- Comparación entre ancho de banda de una octava y dos octavas
+- Simulación conjunta de las seis bandas pasa-banda
+- Validación de la etapa sumadora inversora
+- Evaluación del rango de ganancia de **-12 dB**, **0 dB** y **+12 dB**
+
+Durante el análisis inicial con una octava se observó que la respuesta máxima del filtro no alcanzaba 0 dB, por lo que se ajustó el ancho de banda a dos octavas. Con esta corrección, la atenuación en la frecuencia central se redujo considerablemente.
+
+## Resultados Principales
+
+- Se diseñaron seis bandas de ecualización enfocadas en el rango sonoro del piano eléctrico.
+- Cada banda fue implementada como un filtro pasa-banda activo de cuarto orden.
+- Se utilizó topología Sallen-Key para los filtros pasa-altas y pasa-bajas.
+- El ancho de banda de dos octavas permitió mejorar la respuesta en la frecuencia central.
+- La etapa sumadora inversora permitió controlar cada banda dentro de un rango aproximado de ±12 dB.
+- La etapa de salida fue diseñada considerando una bocina de 8 Ω y 35 W RMS.
+- Las simulaciones en LTspice permitieron comprobar el comportamiento general del sistema.
+
+## Herramientas Utilizadas
+
+- LTspice
+- Amplificadores operacionales TL081
+- Filtros activos Sallen-Key
+- Transistores BJT para etapa clase AB
+- Herramienta Okawa-denshi para cálculo de filtros
+- Análisis AC para respuesta en frecuencia
+- Diseño y análisis de circuitos analógicos
+
+
+## Integrantes
+
+- Uriel Pérez
+- Diego Lemus
+- Diego Solis
+
+## Video del Proyecto
+
+En el siguiente enlace se presenta el funcionamiento general del proyecto:
+
+[Ver video en YouTube](https://youtube.com/shorts/Q-_U898Za5Q)
